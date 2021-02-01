@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TvPage extends StatefulWidget {
   @override
@@ -7,6 +7,20 @@ class TvPage extends StatefulWidget {
 }
 
 class _TvPageState extends State<TvPage> {
+  Future<void> _launched;
+  Future<void> _launchInWebViewWithDomStorage(String url) async {
+    if (await canLaunch(url)) {
+      await launch(
+        url,
+        forceSafariVC: true,
+        forceWebView: true,
+        enableDomStorage: true,
+      );
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +38,12 @@ class _TvPageState extends State<TvPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          setState(() {
+            _launched = _launchInWebViewWithDomStorage(
+                'https://www.youtube.com/watch?v=bkXn38__Gy0&ab_channel=FRANCE24');
+          });
+        },
         icon: Icon(
           Icons.live_tv,
           color: Colors.white,

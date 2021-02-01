@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:assets_audio_player/assets_audio_player.dart';
 
 class FmPage extends StatefulWidget {
   @override
@@ -7,7 +6,6 @@ class FmPage extends StatefulWidget {
 }
 
 class _FmPageState extends State<FmPage> {
-  final AssetsAudioPlayer _player = AssetsAudioPlayer.newPlayer();
 
   @override
   Widget build(BuildContext context) {

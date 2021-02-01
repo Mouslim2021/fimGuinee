@@ -3,7 +3,6 @@ import 'pages/teamPage.dart';
 import 'package:flutter/material.dart';
 import 'package:fim_guinee/navy_bar.dart';
 
-
 void main() {
   runApp(MyApp());
 }
@@ -20,9 +19,8 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.orange[700],
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: VideoApp(),
       // home: TeamPage(),
-      // home: NavyBarPage(),
+      home: NavyBarPage(),
     );
   }
 }
