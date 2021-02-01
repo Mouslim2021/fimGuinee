@@ -30,8 +30,6 @@ dependencies:
   flutter_icons: ^1.1.0
   assets_audio_player: ^2.0.13+1
   youtube_player_flutter: ^7.0.0+7
-  # video_player: ^1.0.1
-  video_player: ^0.10.5
 
 dev_dependencies:
   flutter_test:

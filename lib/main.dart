@@ -2,7 +2,7 @@ import 'package:fim_guinee/pages/fmPage.dart';
 import 'pages/teamPage.dart';
 import 'package:flutter/material.dart';
 import 'package:fim_guinee/navy_bar.dart';
-import 'package:fim_guinee/pages/videoPlayer.dart';
+
 
 void main() {
   runApp(MyApp());
