@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:fim_guinee/src/youtubePlayer.dart';
 
 class TvPage extends StatefulWidget {
   @override
@@ -7,19 +7,6 @@ class TvPage extends StatefulWidget {
 }
 
 class _TvPageState extends State<TvPage> {
-  Future<void> _launched;
-  Future<void> _launchInWebViewWithDomStorage(String url) async {
-    if (await canLaunch(url)) {
-      await launch(
-        url,
-        forceSafariVC: true,
-        forceWebView: true,
-        enableDomStorage: true,
-      );
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +26,11 @@ class _TvPageState extends State<TvPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          setState(() {
-            _launched = _launchInWebViewWithDomStorage(
-                'https://www.youtube.com/watch?v=bkXn38__Gy0&ab_channel=FRANCE24');
-          });
+          Navigator.push(context, MaterialPageRoute(
+            builder: (context){
+              return FmLiveStream();
+            }
+          ));
         },
         icon: Icon(
           Icons.live_tv,
