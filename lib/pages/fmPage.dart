@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
+
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,7 +28,7 @@ class _FmPageState extends State<FmPage> {
             image: MetasImage.asset("assets/icone.jpg"),
           ),
         ),
-        autoStart: true,
+        autoStart: false,
         showNotification: true,
         playInBackground: PlayInBackground.enabled,
         notificationSettings: NotificationSettings(

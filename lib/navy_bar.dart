@@ -1,10 +1,17 @@
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
-import 'package:fim_guinee/pages/fmPage.dart';
-import 'package:fim_guinee/pages/newsPage.dart';
-import 'package:fim_guinee/pages/podCastPage.dart';
-import 'package:fim_guinee/pages/teamPage.dart';
-import 'package:fim_guinee/pages/tvPage.dart';
+import 'pages/fmPage.dart';
+import 'pages/newsPage.dart';
+import 'pages/teamPage.dart';
+import 'pages/tvPage.dart';
+import 'package:fim_guinee/src/youtubePlayer.dart';
 import 'package:flutter/material.dart';
+import 'src/api_files/details/journalTV.dart';
+import 'src/api_files/details/othersDetails.dart';
+import 'src/api_files/details/populairesDetails.dart';
+import 'src/api_files/details/recentsDetails.dart';
+import 'src/api_files/detailSimilaires/simil_others_details.dart';
+import 'src/api_files/detailSimilaires/simil_populaire_detail.dart';
+import 'src/api_files/detailSimilaires/simil_recent_detail.dart';
 
 class NavyBarPage extends StatefulWidget {
   @override
@@ -12,41 +19,59 @@ class NavyBarPage extends StatefulWidget {
 }
 
 class _NavyBarPageState extends State<NavyBarPage> {
-  int currentIndex = 0;
 
-  Widget changePages(){
-    switch (currentIndex) {
-      case 0:
-        return FmPage();
-        break;
-        case 1:
-        return TvPage();
-        break;
-        case 2:
-        return NewsPage();
-        break;
-        case 3:
-        return PodCastPage();
-        break;
-        case 4:
-        return TeamPage();
-    };
-  }
+  
+  
+  int _selectedPage = 0;
+  // List<Widget> listPage = List<Widget>();
+
+  // Widget changePages(){
+  //   switch (currentIndex) {
+  //     case 0:
+  //       return FmPage();
+  //       break;
+  //       case 1:
+  //       return TvPage();
+  //       break;
+  //       case 2:
+  //       return NewsPage();
+  //       break;
+  //       case 3:
+  //       return TeamPage();
+  //   };
+  // }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   listPage.add(FmPage());
+  //   listPage.add(TvPage());
+  //   listPage.add(NewsPage());
+  //   listPage.add(TeamPage());
+  // }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: changePages(),
+        body: IndexedStack(
+          index: _selectedPage,
+          children: [
+            FmPage(),
+            TvPage(),
+            NewsPage(),
+            TeamPage(),
+          ],
+        ),
         bottomNavigationBar: BottomNavyBar(
-          backgroundColor: currentIndex == 0 ?
-          Colors.orange[900] : currentIndex == 1 ? Colors.orange[700] : currentIndex == 2 ? Colors.orange[900] : currentIndex == 3 ? Colors.orange[700] : currentIndex == 4 ? Colors.orange[900] : Colors.orange[700] ,
-          selectedIndex: currentIndex,
+          backgroundColor: _selectedPage == 0 ?
+          Colors.orange[900] : _selectedPage == 1 ? Colors.orange[700] : _selectedPage == 2 ? Colors.orange[900] : _selectedPage == 3 ? Colors.orange[700] : _selectedPage == 4 ? Colors.orange[900] : Colors.orange[700] ,
+          selectedIndex: _selectedPage,
           showElevation: true,
           itemCornerRadius: 8,
           curve: Curves.easeInBack,
-          onItemSelected: (index) => setState(() {
-            currentIndex = index;
+          onItemSelected: (index) => setState((){
+            _selectedPage = index;
           }),
           items: [
             BottomNavyBarItem(
@@ -69,14 +94,6 @@ class _NavyBarPageState extends State<NavyBarPage> {
               icon: Icon(Icons.event_note),
               title: Text(
                 'Les actus',
-              ),
-              activeColor: Colors.white,
-              textAlign: TextAlign.center,
-            ),
-            BottomNavyBarItem(
-              icon: Icon(Icons.speaker),
-              title: Text(
-                'Podcast',
               ),
               activeColor: Colors.white,
               textAlign: TextAlign.center,
