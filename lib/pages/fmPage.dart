@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:introduction_screen/introduction_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 
 
@@ -15,6 +14,30 @@ class FmPage extends StatefulWidget {
 class _FmPageState extends State<FmPage> {
   final AssetsAudioPlayer _player = AssetsAudioPlayer.newPlayer();
 
+  checkConn() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      print('Connected with mobile data');
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      print('Connected with wifi data');
+    } else if (connectivityResult == ConnectivityResult.none) {
+      showToast(
+        'Aucune connexion détectée, Vérifiez votre internet et réessayez plus tard',
+        context: context,
+        animation: StyledToastAnimation.slideFromBottomFade,
+        reverseAnimation: StyledToastAnimation.slideToBottomFade,
+        position:
+            StyledToastPosition(align: Alignment.bottomCenter, offset: 0.0),
+        startOffset: Offset(0.0, -3.0),
+        reverseEndOffset: Offset(0.0, -3.0),
+        duration: Duration(seconds: 5),
+        animDuration: Duration(seconds: 1),
+        curve: Curves.elasticInOut,
+        reverseCurve: Curves.elasticOut,
+      );
+    }
+  }
+
   void _init() async {
     try {
       _player.onErrorDo = (error) {
@@ -24,7 +47,7 @@ class _FmPageState extends State<FmPage> {
         Audio.liveStream(
           "http://live02.rfi.fr/rfimonde-96k.mp3",
           metas: Metas(
-            title: "100.00",
+            title: "95.3",
             image: MetasImage.asset("assets/icone.jpg"),
           ),
         ),
@@ -44,6 +67,7 @@ class _FmPageState extends State<FmPage> {
 
   @override
   void initState() {
+    checkConn();
     _init();
     super.initState();
   }

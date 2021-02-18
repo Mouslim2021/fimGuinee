@@ -6,6 +6,8 @@ import 'package:fim_guinee/src/api_files/details/othersDetails.dart';
 import 'package:fim_guinee/src/api_files/details/journalTV.dart';
 import 'package:fim_guinee/src/api_files/details/slidersDetails.dart';
 import 'package:fim_guinee/src/api_files/mesConst.dart';
+import 'package:fim_guinee/src/api_files/provider/fimProvider.dart';
+import 'package:fim_guinee/src/api_files/provider/models/dataModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:http/http.dart' as http;
@@ -13,25 +15,18 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-class NewsPage extends StatefulWidget {
+class NewsProvider extends StatefulWidget {
   @override
-  _NewsPageState createState() => _NewsPageState();
+  _NewsProviderState createState() => _NewsProviderState();
 }
 
-class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
+class _NewsProviderState extends State<NewsProvider>
+    with WidgetsBindingObserver {
 
   double elevation = 5;
-  var myData;
-
-  getSlidersImg() async {
-    // SharedPreferences preferences = await SharedPreferences.getInstance();
-    final response = await http.get("$url/home");
-    final result = json.decode(response.body);
-    // Map<String, dynamic> data = jsonDecode(response.body);
-    // await preferences.setString("myData", result);
-    return result;
-  }
 
   @override
   void initState() {
@@ -55,35 +50,44 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: FutureBuilder(
-          future: getSlidersImg(),
-          builder: (context, snapShot) {
-            if (snapShot.hasError) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      AntDesign.disconnect,
-                      size: 150,
-                      color: Colors.grey[800],
-                    ),
-                    SizedBox(height: 15),
-                    Container(
-                      width: 400,
-                      child: Text(
-                        "Erreur de recupération des news, vérifiez votre connexion puis réessayez",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 18,
+        body: Consumer<FimProvider>(
+          builder: (_, FimProvider fimProvider, __) {
+            if (fimProvider.fimModel.sliders.isEmpty) {
+              return Stack(
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          AntDesign.disconnect,
+                          size: 150,
                           color: Colors.grey[800],
                         ),
-                      ),
+                        SizedBox(height: 15),
+                        Container(
+                          width: 400,
+                          child: Text(
+                            "Erreur de recupération des news, vérifiez votre connexion puis réessayez",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  Center(
+                    child: SpinKitFadingCube(
+                      duration: Duration(seconds: 5),
+                      color: Colors.orange[900],
+                    ),
+                  ),
+                ],
               );
-            } else if (snapShot.hasData) {
+            } else if (fimProvider.fimModel.sliders.isNotEmpty) {
               return CustomScrollView(
                 slivers: [
                   SliverToBoxAdapter(
@@ -94,6 +98,7 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                       child: Swiper(
                         fade: 0.0,
                         itemBuilder: (BuildContext context, int index) {
+                          Other sliders = fimProvider.fimModel.sliders[index];
                           return Column(
                             children: <Widget>[
                               Container(
@@ -106,7 +111,7 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                                   color: Colors.blueGrey,
                                   image: DecorationImage(
                                     image: NetworkImage(
-                                      '$img/${snapShot.data['sliders'][index]['image']}',
+                                      '$img/${sliders.image}',
                                     ),
                                     fit: BoxFit.cover,
                                   ),
@@ -116,8 +121,7 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                                   child: Center(
                                     child: Flexible(
                                       child: Text(
-                                        snapShot.data['sliders'][index]
-                                            ['titre'],
+                                        sliders.titre,
                                         style: TextStyle(
                                           backgroundColor:
                                               Colors.grey.withOpacity(0.5),
@@ -133,11 +137,25 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                           );
                         },
                         onTap: (index) {
-                          
+                          Other sliders = fimProvider.fimModel.sliders[index];
+                          Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) {
+                                        return SliderDetails(
+                                          id: sliders.id,
+                                          titre: sliders.titre,
+                                          subtitle: sliders.categorie['nom'],
+                                          image: '$img/' +sliders.image,
+                                          description: sliders.description,
+                                        );
+                                      },
+                                    ),
+                                  );
                         },
                         duration: 1,
                         autoplay: true,
-                        itemCount: snapShot.data.length - 1,
+                        itemCount: fimProvider.fimModel.sliders.length,
                         scale: 0.9,
                         pagination: SwiperPagination(),
                       ),
@@ -169,8 +187,9 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                     child: SliverGrid.count(
                       crossAxisCount: 2,
                       children: List.generate(
-                        snapShot.data['recents'].length,
+                        fimProvider.fimModel.recents.length,
                         (int index) {
+                          Other recents = fimProvider.fimModel.recents[index];
                           return AnimationConfiguration.staggeredGrid(
                             position: index,
                             duration: const Duration(milliseconds: 375),
@@ -183,17 +202,11 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                                     MaterialPageRoute(
                                       builder: (context) {
                                         return RecentDetails(
-                                          id: snapShot.data['recents'][index]
-                                              ['id'],
-                                          titre: snapShot.data['recents'][index]
-                                              ['titre'],
-                                          subtitle: snapShot.data['recents']
-                                              [index]['categorie']['nom'],
-                                          image: '$img/' +
-                                              snapShot.data['recents'][index]
-                                                  ['image'],
-                                          description: snapShot.data['recents']
-                                              [index]['description'],
+                                          id: recents.id,
+                                          titre: recents.titre,
+                                          subtitle: recents.categorie['nom'],
+                                          image: '$img/' + recents.image,
+                                          description: recents.description,
                                         );
                                       },
                                     ),
@@ -225,14 +238,14 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                                                       BorderRadius.circular(5),
                                                 ),
                                                 child: Image.network('$img/' +
-                                                    '${snapShot.data['recents'][index]['image']}'),
+                                                    '${recents.image}'),
                                               ),
                                               Padding(
                                                 padding:
                                                     const EdgeInsets.all(5),
                                                 child: Container(
                                                   child: Text(
-                                                    "${snapShot.data['recents'][index]['titre']}",
+                                                    "${recents.titre}",
                                                     maxLines: 2,
                                                   ),
                                                 ),
@@ -253,8 +266,7 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                                             ),
                                             child: Center(
                                               child: Text(
-                                                snapShot.data['recents'][index]
-                                                    ['categorie']['nom'],
+                                                recents.categorie['nom'],
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                 ),
@@ -299,8 +311,9 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                     child: SliverGrid.count(
                       crossAxisCount: 2,
                       children: List.generate(
-                        snapShot.data['videos'].length,
+                        fimProvider.fimModel.videos.length,
                         (int index) {
+                          Video videos = fimProvider.fimModel.videos[index];
                           return AnimationConfiguration.staggeredGrid(
                             position: index,
                             duration: const Duration(milliseconds: 375),
@@ -308,13 +321,14 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                             child: ScaleAnimation(
                               child: FadeInAnimation(
                                 child: InkWell(
-                                  onTap: () => Navigator.push(context,
+                                  onTap: () {
+                                    Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
                                     return JournalTV(
-                                      url: snapShot.data['videos'][index]
-                                          ['url'],
+                                      url: videos.url,
                                     );
-                                  })),
+                                  }));
+                                  },
                                   child: Card(
                                     elevation: elevation,
                                     child: Column(
@@ -332,16 +346,21 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                                                       .width /
                                                   2,
                                               decoration: BoxDecoration(
-                                                color: Colors.red,
+                                                color: Colors.grey[700],
                                                 image: DecorationImage(
                                                   fit: BoxFit.fill,
-                                                  image: AssetImage(
-                                                    'assets/journal.jpg',
+                                                  image: NetworkImage(
+                                                    '$thumbnail/${YoutubePlayer.convertUrlToId(videos.url)}/0.jpg',
                                                   ),
                                                 ),
                                                 borderRadius:
                                                     BorderRadius.circular(5),
                                               ),
+                                              child: Icon(
+                                                Icons.play_arrow,
+                                                color: Colors.orange[900],
+                                                size: 60,
+                                                ),
                                             ),
                                             Positioned(
                                               top: 20,
@@ -356,8 +375,7 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                                                 ),
                                                 child: Center(
                                                   child: Text(
-                                                    snapShot.data['videos']
-                                                        [index]['titre'],
+                                                    videos.titre,
                                                     style: TextStyle(
                                                       color: Colors.white,
                                                     ),
@@ -370,8 +388,7 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                                         Padding(
                                           padding: const EdgeInsets.all(10),
                                           child: Text(
-                                            snapShot.data['videos'][index]
-                                                ['type'],
+                                            videos.type,
                                             style: TextStyle(
                                               fontSize: 18,
                                             ),
@@ -415,8 +432,10 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                     child: SliverGrid.count(
                       crossAxisCount: 2,
                       children: List.generate(
-                        snapShot.data['populaires'].length,
+                        fimProvider.fimModel.populaires.length,
                         (int index) {
+                          Other populaires =
+                              fimProvider.fimModel.populaires[index];
                           return AnimationConfiguration.staggeredGrid(
                             position: index,
                             duration: const Duration(milliseconds: 375),
@@ -427,17 +446,11 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                                   onTap: () => Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
                                     return PopulaireDetails(
-                                      id: snapShot.data['populaires'][index]
-                                          ['id'],
-                                      titre: snapShot.data['populaires'][index]
-                                          ['titre'],
-                                      subtitle: snapShot.data['populaires']
-                                          [index]['categorie']['nom'],
-                                      image: '$img/' +
-                                          snapShot.data['populaires'][index]
-                                              ['image'],
-                                      description: snapShot.data['populaires']
-                                          [index]['description'],
+                                      id: populaires.id,
+                                      titre: populaires.titre,
+                                      subtitle: populaires.categorie['nom'],
+                                      image: '$img/' + populaires.image,
+                                      description: populaires.description,
                                     );
                                   })),
                                   child: Card(
@@ -467,14 +480,14 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                                                       BorderRadius.circular(5),
                                                 ),
                                                 child: Image.network('$img/' +
-                                                    '${snapShot.data['populaires'][index]['image']}'),
+                                                    '${populaires.image}'),
                                               ),
                                               Padding(
                                                 padding:
                                                     const EdgeInsets.all(5),
                                                 child: Container(
                                                   child: Text(
-                                                    "${snapShot.data['populaires'][index]['titre']}",
+                                                    "${populaires.titre}",
                                                     maxLines: 2,
                                                   ),
                                                 ),
@@ -495,8 +508,7 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                                             ),
                                             child: Center(
                                               child: Text(
-                                                snapShot.data['populaires']
-                                                    [index]['categorie']['nom'],
+                                                populaires.categorie['nom'],
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                 ),
@@ -666,8 +678,9 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                     child: SliverGrid.count(
                       crossAxisCount: 2,
                       children: List.generate(
-                        snapShot.data['others'].length,
+                        fimProvider.fimModel.others.length,
                         (int index) {
+                          Other others = fimProvider.fimModel.others[index];
                           return AnimationConfiguration.staggeredGrid(
                             position: index,
                             duration: const Duration(milliseconds: 375),
@@ -678,16 +691,11 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                                   onTap: () => Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
                                     return OthersDetails(
-                                      id: snapShot.data['others'][index]['id'],
-                                      titre: snapShot.data['others'][index]
-                                          ['titre'],
-                                      subtitle: snapShot.data['others'][index]
-                                          ['categorie']['nom'],
-                                      image: '$img/' +
-                                          snapShot.data['others'][index]
-                                              ['image'],
-                                      description: snapShot.data['others']
-                                          [index]['description'],
+                                      id: others.id,
+                                      titre: others.titre,
+                                      subtitle: others.categorie['nom'],
+                                      image: '$img/' + others.image,
+                                      description: others.description,
                                     );
                                   })),
                                   child: Card(
@@ -717,14 +725,14 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                                                       BorderRadius.circular(5),
                                                 ),
                                                 child: Image.network('$img/' +
-                                                    '${snapShot.data['others'][index]['image']}'),
+                                                    '${others.image}'),
                                               ),
                                               Padding(
                                                 padding:
                                                     const EdgeInsets.all(5),
                                                 child: Container(
                                                   child: Text(
-                                                    "${snapShot.data['others'][index]['titre']}",
+                                                    "${others.titre}",
                                                     maxLines: 2,
                                                   ),
                                                 ),
@@ -745,8 +753,7 @@ class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
                                             ),
                                             child: Center(
                                               child: Text(
-                                                snapShot.data['others'][index]
-                                                    ['categorie']['nom'],
+                                                others.categorie['nom'],
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                 ),

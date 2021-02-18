@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:fim_guinee/src/api_files/provider/services/repository.dart';
+import 'package:fim_guinee/src/api_files/provider/views/newsProvider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -11,21 +14,36 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+
+  Repository repository = Repository();
+
   @override
   void initState() {
     super.initState();
-    Timer(
-        Duration(seconds: 3),
-        () => Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) {
-              return NavyBarPage();
-            })));
+    _callApi();
+    
   }
+
+  _callApi(){
+    repository.fetchFimData(context);
+     Timer(
+      Duration(seconds: 5),
+      () => Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            // return NewsProvider();
+            return NavyBarPage();
+          },
+        ),
+      ),
+    );
+  }
+ 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
+    return Center(
         child: Stack(
           children: [
             Container(
@@ -37,18 +55,24 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
             Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 SizedBox(),
-                SpinKitWave(
-                  type: SpinKitWaveType.center,
-                  color: Colors.white,
+                Column(
+                  children: [
+                    SpinKitWave(
+                      type: SpinKitWaveType.center,
+                      color: Colors.white,
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                  ],
                 ),
               ],
             )
           ],
         ),
-      ),
-    );
+      );
   }
 }

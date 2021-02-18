@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../mesConst.dart';
 import '../detailSimilaires/simil_others_details.dart';
@@ -31,8 +32,12 @@ class OthersDetails extends StatefulWidget {
 class _OthersDetailsState extends State<OthersDetails> {
   double elevation = 5;
   getDetails() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
     final response = await http.get("$simil/${widget.id}");
-    final result = json.decode(response.body);
+    // final result = json.decode();
+    await preferences.setString('others', response.body);
+    final resultOthers = preferences.getString('others');
+    final result = json.decode(resultOthers);
     return result;
   }
 

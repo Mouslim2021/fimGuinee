@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../mesConst.dart';
 import '../detailSimilaires/simil_recent_detail.dart';
@@ -29,10 +30,14 @@ class RecentDetails extends StatefulWidget {
 }
 
 class _RecentDetailsState extends State<RecentDetails> {
-   double elevation;
+   double elevation = 5;
   getDetails() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
     final response = await http.get("$simil/${widget.id}");
-    final result = json.decode(response.body);
+    // final result = json.decode();
+    await preferences.setString('recent', response.body);
+    final resultRecent = preferences.getString('recent');
+    final result = json.decode(resultRecent);
     return result;
   }
 

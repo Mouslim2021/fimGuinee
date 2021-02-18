@@ -10,14 +10,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../mesConst.dart';
 import '../detailSimilaires/simil_populaire_detail.dart';
 
-class PopulaireDetails extends StatefulWidget {
+class SliderDetails extends StatefulWidget {
   int id;
   String titre;
   String subtitle;
   String image;
   String description;
 
-  PopulaireDetails({
+  SliderDetails({
     this.id,
     this.titre,
     this.subtitle,
@@ -26,18 +26,18 @@ class PopulaireDetails extends StatefulWidget {
   });
 
   @override
-  _PopulaireDetailsState createState() => _PopulaireDetailsState();
+  _SliderDetailsState createState() => _SliderDetailsState();
 }
 
-class _PopulaireDetailsState extends State<PopulaireDetails> {
+class _SliderDetailsState extends State<SliderDetails> {
   double elevation = 5;
   getDetails() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     final response = await http.get("$simil/${widget.id}");
     // final result = json.decode();
-    await preferences.setString('populaire', response.body);
-    final resultPopulaire = preferences.getString('populaire');
-    final result = json.decode(resultPopulaire);
+    await preferences.setString('sliders', response.body);
+    final resultSliders = preferences.getString('sliders');
+    final result = json.decode(resultSliders);
     return result;
   }
 

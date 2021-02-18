@@ -10,26 +10,40 @@ class TvPage extends StatefulWidget {
 }
 
 class _TvPageState extends State<TvPage> {
-
   Future<bool> checkConn() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
-      print("Connection mobile");
+      return Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return FmLiveStream();
+          },
+        ),
+      );
     } else if (connectivityResult == ConnectivityResult.wifi) {
-      print("Connection wifi");
+      return Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) {
+            return FmLiveStream();
+          },
+        ),
+      );
     } else if (connectivityResult == ConnectivityResult.none) {
       showToast(
         'Aucune connexion détectée, Vérifiez votre internet et réessayez plus tard',
         context: context,
-        animation: StyledToastAnimation.slideFromTopFade,
-        reverseAnimation: StyledToastAnimation.slideToTopFade,
-        position: StyledToastPosition(align: Alignment.topCenter, offset: 0.0),
+        animation: StyledToastAnimation.slideFromBottomFade,
+        reverseAnimation: StyledToastAnimation.slideToBottomFade,
+        position:
+            StyledToastPosition(align: Alignment.bottomCenter, offset: 0.0),
         startOffset: Offset(0.0, -3.0),
         reverseEndOffset: Offset(0.0, -3.0),
         duration: Duration(seconds: 5),
         animDuration: Duration(seconds: 1),
-        curve: Curves.fastLinearToSlowEaseIn,
-        reverseCurve: Curves.fastOutSlowIn,
+        curve: Curves.elasticInOut,
+        reverseCurve: Curves.elasticOut,
       );
     }
   }
@@ -39,27 +53,30 @@ class _TvPageState extends State<TvPage> {
       duration: Duration(seconds: 6),
       titleText: Text(
         "Patientez",
-        style: TextStyle(color: Color(0xffc43c24)),
+        style: TextStyle(
+          color: Colors.orange[800],
+        ),
       ),
       messageText: Text(
         "En cours de traitement...",
-        style: TextStyle(color: Color(0xffc43c24)),
+        style: TextStyle(
+          color: Colors.orange[800],
+        ),
       ),
       showProgressIndicator: true,
-      progressIndicatorBackgroundColor: Color(0xff2a4b8d),
+      progressIndicatorBackgroundColor: Colors.green[700],
       backgroundGradient:
           LinearGradient(colors: [Colors.white, Colors.grey[400]]),
-      backgroundColor: Colors.red,
+      backgroundColor: Colors.orange[800],
       boxShadows: [
         BoxShadow(
-          color: Colors.blue[800],
+          color: Colors.green[700],
           offset: Offset(0.0, 2.0),
           blurRadius: 3.0,
         )
       ],
     )..show(context);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +96,7 @@ class _TvPageState extends State<TvPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return FmLiveStream();
-          }));
+          checkConn();
         },
         icon: Icon(
           Icons.live_tv,
