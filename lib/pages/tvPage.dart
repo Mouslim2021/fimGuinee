@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
-import 'package:flushbar/flushbar.dart';
-import '../src/youtubePlayer.dart';
 
 class TvPage extends StatefulWidget {
   @override
@@ -10,29 +7,9 @@ class TvPage extends StatefulWidget {
 }
 
 class _TvPageState extends State<TvPage> {
-  Future<bool> checkConn() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile) {
-      return Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return FmLiveStream();
-          },
-        ),
-      );
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      return Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) {
-            return FmLiveStream();
-          },
-        ),
-      );
-    } else if (connectivityResult == ConnectivityResult.none) {
-      showToast(
-        'Aucune connexion détectée, Vérifiez votre internet et réessayez plus tard',
+  availbleTV(){
+    return showToast(
+        'Bientôt disponible',
         context: context,
         animation: StyledToastAnimation.slideFromBottomFade,
         reverseAnimation: StyledToastAnimation.slideToBottomFade,
@@ -45,37 +22,6 @@ class _TvPageState extends State<TvPage> {
         curve: Curves.elasticInOut,
         reverseCurve: Curves.elasticOut,
       );
-    }
-  }
-
-  loader() {
-    return Flushbar(
-      duration: Duration(seconds: 6),
-      titleText: Text(
-        "Patientez",
-        style: TextStyle(
-          color: Colors.orange[800],
-        ),
-      ),
-      messageText: Text(
-        "En cours de traitement...",
-        style: TextStyle(
-          color: Colors.orange[800],
-        ),
-      ),
-      showProgressIndicator: true,
-      progressIndicatorBackgroundColor: Colors.green[700],
-      backgroundGradient:
-          LinearGradient(colors: [Colors.white, Colors.grey[400]]),
-      backgroundColor: Colors.orange[800],
-      boxShadows: [
-        BoxShadow(
-          color: Colors.green[700],
-          offset: Offset(0.0, 2.0),
-          blurRadius: 3.0,
-        )
-      ],
-    )..show(context);
   }
 
   @override
@@ -84,10 +30,10 @@ class _TvPageState extends State<TvPage> {
       body: Stack(
         children: [
           Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
+            width: double.infinity,
+            height: double.infinity,
             child: Image.asset(
-              'assets/img_3.png',
+              'assets/img_2-min.PNG',
               fit: BoxFit.cover,
             ),
           ),
@@ -96,7 +42,7 @@ class _TvPageState extends State<TvPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          checkConn();
+          availbleTV();
         },
         icon: Icon(
           Icons.live_tv,

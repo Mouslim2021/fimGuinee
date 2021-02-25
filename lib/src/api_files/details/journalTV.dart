@@ -115,10 +115,6 @@ class _JournalTVState extends State<JournalTV> {
       builder: (context, player) => Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
-          leading: Image.asset(
-            'assets/icone.jpg',
-            fit: BoxFit.fitWidth,
-          ),
           title: const Text(
             'FIM 24 TV',
             style: TextStyle(
@@ -166,10 +162,7 @@ class _JournalTVState extends State<JournalTV> {
                               }
                             : null,
                       ),
-                      FullScreenButton(
-                        controller: _controller,
-                        color: Colors.blueAccent,
-                      ),
+                      
                     ],
                   ),
                   _space,
@@ -207,6 +200,5 @@ class _JournalTVState extends State<JournalTV> {
       ),
     );
   }
-
   Widget get _space => const SizedBox(height: 10);
 }

@@ -8,16 +8,17 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../mesConst.dart';
-import '../detailSimilaires/simil_populaire_detail.dart';
+import '../comments/recentComment.dart';
+import '../detailSimilaires/articlesSimilaires.dart';
 
-class PopulaireDetails extends StatefulWidget {
+class SliderDetails extends StatefulWidget {
   int id;
   String titre;
   String subtitle;
   String image;
   String description;
 
-  PopulaireDetails({
+  SliderDetails({
     this.id,
     this.titre,
     this.subtitle,
@@ -26,18 +27,17 @@ class PopulaireDetails extends StatefulWidget {
   });
 
   @override
-  _PopulaireDetailsState createState() => _PopulaireDetailsState();
+  _SliderDetailsState createState() => _SliderDetailsState();
 }
 
-class _PopulaireDetailsState extends State<PopulaireDetails> {
+class _SliderDetailsState extends State<SliderDetails> {
   double elevation = 5;
   getDetails() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     final response = await http.get("$simil/${widget.id}");
-    // final result = json.decode();
-    await preferences.setString('populaire', response.body);
-    final resultPopulaire = preferences.getString('populaire');
-    final result = json.decode(resultPopulaire);
+    await preferences.setString('sliders', response.body);
+    final resultSliders = preferences.getString('sliders');
+    final result = json.decode(resultSliders);
     return result;
   }
 
@@ -45,6 +45,9 @@ class _PopulaireDetailsState extends State<PopulaireDetails> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+            // title: Text(''),
+            ),
         body: FutureBuilder(
           future: getDetails(),
           builder: (context, snapShot) {
@@ -138,7 +141,12 @@ class _PopulaireDetailsState extends State<PopulaireDetails> {
                       padding: const EdgeInsets.symmetric(horizontal: 90),
                       child: FlatButton(
                         color: Colors.orange[900],
-                        onPressed: () {},
+                        onPressed: () => Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return RecentComment(
+                            id: widget.id,
+                          );
+                        })),
                         child: Text(
                           'Voir les commentaires',
                           style: TextStyle(color: Colors.white),
@@ -169,107 +177,7 @@ class _PopulaireDetailsState extends State<PopulaireDetails> {
                     ),
                   ),
                   SliverToBoxAdapter(
-                    child: Container(
-                      height: 130,
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              FlatButton(
-                                color: Colors.blue[800],
-                                onPressed: () {},
-                                child: Container(
-                                  width: 150,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Icon(
-                                        Zocial.facebook,
-                                        color: Colors.white,
-                                      ),
-                                      Text(
-                                        's\'abonner',
-                                        style: TextStyle(color: Colors.white),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              FlatButton(
-                                color: Colors.blue[600],
-                                onPressed: () {},
-                                child: Container(
-                                  width: 150,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Icon(
-                                        Zocial.linkedin,
-                                        color: Colors.white,
-                                      ),
-                                      Text(
-                                        's\'abonner',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              FlatButton(
-                                color: Colors.blueAccent,
-                                onPressed: () {},
-                                child: Container(
-                                  width: 150,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Icon(
-                                        Zocial.twitter,
-                                        color: Colors.white,
-                                      ),
-                                      Text(
-                                        's\'abonner',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              FlatButton(
-                                color: Colors.red[600],
-                                onPressed: () {},
-                                child: Container(
-                                  width: 150,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Icon(
-                                        Zocial.youtube,
-                                        color: Colors.white,
-                                      ),
-                                      Text(
-                                        's\'abonner',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                    child: reseauSociaux(),
                   ),
                   // articles similaires
                   SliverToBoxAdapter(
@@ -308,7 +216,9 @@ class _PopulaireDetailsState extends State<PopulaireDetails> {
                                 child: InkWell(
                                   onTap: () => Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
-                                    return SimPopulDetail(
+                                    return SimOthersDetail(
+                                      id: snapShot.data['similaires'][index]
+                                          ['id'],
                                       titre: snapShot.data['similaires'][index]
                                           ['titre'],
                                       subtitle: snapShot.data['similaires']

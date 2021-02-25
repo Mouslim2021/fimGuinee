@@ -29,7 +29,7 @@ class _FmLiveStreamState extends State<FmLiveStream> {
           "https://www.youtube.com/watch?v=NsPCtDgZXwg"),
       flags: const YoutubePlayerFlags(
         mute: false,
-        autoPlay: true,
+        autoPlay: false,
         disableDragSeek: false,
         loop: false,
         isLive: true,
@@ -70,9 +70,9 @@ class _FmLiveStreamState extends State<FmLiveStream> {
   @override
   Widget build(BuildContext context) {
     return YoutubePlayerBuilder(
-      onExitFullScreen: () {
-        SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight, DeviceOrientation.portraitUp]);
-      },
+      // onExitFullScreen: () {
+      //   SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight, DeviceOrientation.portraitUp]);
+      // },
       player: YoutubePlayer(
         progressColors: ProgressBarColors(
           playedColor: Colors.green,
@@ -111,12 +111,9 @@ class _FmLiveStreamState extends State<FmLiveStream> {
         },
       ),
       builder: (context, player) => Scaffold(
+        backgroundColor: Colors.orange[800],
         key: _scaffoldKey,
         appBar: AppBar(
-          leading: Image.asset(
-              'assets/icone.jpg',
-              fit: BoxFit.fitWidth,
-            ),
           title: const Text(
             'FIM 24 en live',
             style: TextStyle(color: Colors.white),
@@ -162,10 +159,6 @@ class _FmLiveStreamState extends State<FmLiveStream> {
                               }
                             : null,
                       ),
-                      FullScreenButton(
-                        controller: _controller,
-                        color: Colors.blueAccent,
-                      ),
                     ],
                   ),
                   _space,
@@ -195,23 +188,6 @@ class _FmLiveStreamState extends State<FmLiveStream> {
                       ),
                     ],
                   ),
-                  _space,
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 800),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.0),
-                      color: _getStateColor(_playerState),
-                    ),
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      _playerState.toString(),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w300,
-                        color: Colors.white,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -221,25 +197,5 @@ class _FmLiveStreamState extends State<FmLiveStream> {
     );
   }
 
-  Color _getStateColor(PlayerState state) {
-    switch (state) {
-      case PlayerState.unknown:
-        return Colors.grey[700];
-      case PlayerState.unStarted:
-        return Colors.pink;
-      case PlayerState.ended:
-        return Colors.red;
-      case PlayerState.playing:
-        return Colors.green;
-      case PlayerState.paused:
-        return Colors.orange;
-      case PlayerState.buffering:
-        return Colors.yellow;
-      case PlayerState.cued:
-        return Colors.blue[900];
-      default:
-        return Colors.blue;
-    }
-  }
   Widget get _space => const SizedBox(height: 10);
 }

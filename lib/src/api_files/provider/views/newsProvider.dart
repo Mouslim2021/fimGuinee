@@ -1,22 +1,16 @@
-import 'dart:convert';
-
-import 'package:fim_guinee/src/api_files/details/recentsDetails.dart';
-import 'package:fim_guinee/src/api_files/details/populairesDetails.dart';
-import 'package:fim_guinee/src/api_files/details/othersDetails.dart';
-import 'package:fim_guinee/src/api_files/details/journalTV.dart';
-import 'package:fim_guinee/src/api_files/details/slidersDetails.dart';
-import 'package:fim_guinee/src/api_files/mesConst.dart';
-import 'package:fim_guinee/src/api_files/provider/fimProvider.dart';
-import 'package:fim_guinee/src/api_files/provider/models/dataModel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:flutter_icons/flutter_icons.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+
+import '../../details/articleDetails.dart';
+import '../../details/journalTV.dart';
+import '../../mesConst.dart';
+import '../models/dataModel.dart';
+import '../fimProvider.dart';
 
 class NewsProvider extends StatefulWidget {
   @override
@@ -24,27 +18,12 @@ class NewsProvider extends StatefulWidget {
 }
 
 class _NewsProviderState extends State<NewsProvider>
-    with WidgetsBindingObserver {
+    with AutomaticKeepAliveClientMixin {
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 
   double elevation = 5;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    print(state);
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,39 +32,29 @@ class _NewsProviderState extends State<NewsProvider>
         body: Consumer<FimProvider>(
           builder: (_, FimProvider fimProvider, __) {
             if (fimProvider.fimModel.sliders.isEmpty) {
-              return Stack(
-                children: [
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          AntDesign.disconnect,
-                          size: 150,
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      AntDesign.disconnect,
+                      size: 150,
+                      color: Colors.grey[800],
+                    ),
+                    SizedBox(height: 15),
+                    Container(
+                      width: 400,
+                      child: Text(
+                        "Erreur de recupération des news, vérifiez votre connexion puis réessayez",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 18,
                           color: Colors.grey[800],
                         ),
-                        SizedBox(height: 15),
-                        Container(
-                          width: 400,
-                          child: Text(
-                            "Erreur de recupération des news, vérifiez votre connexion puis réessayez",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.grey[800],
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                  Center(
-                    child: SpinKitFadingCube(
-                      duration: Duration(seconds: 5),
-                      color: Colors.orange[900],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               );
             } else if (fimProvider.fimModel.sliders.isNotEmpty) {
               return CustomScrollView(
@@ -139,19 +108,19 @@ class _NewsProviderState extends State<NewsProvider>
                         onTap: (index) {
                           Other sliders = fimProvider.fimModel.sliders[index];
                           Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return SliderDetails(
-                                          id: sliders.id,
-                                          titre: sliders.titre,
-                                          subtitle: sliders.categorie['nom'],
-                                          image: '$img/' +sliders.image,
-                                          description: sliders.description,
-                                        );
-                                      },
-                                    ),
-                                  );
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return SliderDetails(
+                                  id: sliders.id,
+                                  titre: sliders.titre,
+                                  subtitle: sliders.categorie['nom'],
+                                  image: '$img/' + sliders.image,
+                                  description: sliders.description,
+                                );
+                              },
+                            ),
+                          );
                         },
                         duration: 1,
                         autoplay: true,
@@ -201,7 +170,7 @@ class _NewsProviderState extends State<NewsProvider>
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) {
-                                        return RecentDetails(
+                                        return SliderDetails(
                                           id: recents.id,
                                           titre: recents.titre,
                                           subtitle: recents.categorie['nom'],
@@ -307,6 +276,7 @@ class _NewsProviderState extends State<NewsProvider>
                       ],
                     ),
                   ),
+                  fimProvider.fimModel.videos.isNotEmpty ?
                   AnimationLimiter(
                     child: SliverGrid.count(
                       crossAxisCount: 2,
@@ -323,11 +293,11 @@ class _NewsProviderState extends State<NewsProvider>
                                 child: InkWell(
                                   onTap: () {
                                     Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
-                                    return JournalTV(
-                                      url: videos.url,
-                                    );
-                                  }));
+                                        MaterialPageRoute(builder: (context) {
+                                      return JournalTV(
+                                        url: videos.url,
+                                      );
+                                    }));
                                   },
                                   child: Card(
                                     elevation: elevation,
@@ -360,7 +330,7 @@ class _NewsProviderState extends State<NewsProvider>
                                                 Icons.play_arrow,
                                                 color: Colors.orange[900],
                                                 size: 60,
-                                                ),
+                                              ),
                                             ),
                                             Positioned(
                                               top: 20,
@@ -405,7 +375,8 @@ class _NewsProviderState extends State<NewsProvider>
                         },
                       ),
                     ),
-                  ),
+                  ) :
+                  Text('Bientôt disponible'),
                   // Les plus populaires
                   SliverToBoxAdapter(
                     child: Row(
@@ -445,7 +416,7 @@ class _NewsProviderState extends State<NewsProvider>
                                 child: InkWell(
                                   onTap: () => Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
-                                    return PopulaireDetails(
+                                    return SliderDetails(
                                       id: populaires.id,
                                       titre: populaires.titre,
                                       subtitle: populaires.categorie['nom'],
@@ -550,107 +521,7 @@ class _NewsProviderState extends State<NewsProvider>
                     ),
                   ),
                   SliverToBoxAdapter(
-                    child: Container(
-                      height: 130,
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              FlatButton(
-                                color: Colors.blue[800],
-                                onPressed: () {},
-                                child: Container(
-                                  width: 150,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Icon(
-                                        Zocial.facebook,
-                                        color: Colors.white,
-                                      ),
-                                      Text(
-                                        's\'abonner',
-                                        style: TextStyle(color: Colors.white),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              FlatButton(
-                                color: Colors.blue[600],
-                                onPressed: () {},
-                                child: Container(
-                                  width: 150,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Icon(
-                                        Zocial.linkedin,
-                                        color: Colors.white,
-                                      ),
-                                      Text(
-                                        's\'abonner',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              FlatButton(
-                                color: Colors.blueAccent,
-                                onPressed: () {},
-                                child: Container(
-                                  width: 150,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Icon(
-                                        Zocial.twitter,
-                                        color: Colors.white,
-                                      ),
-                                      Text(
-                                        's\'abonner',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              FlatButton(
-                                color: Colors.red[600],
-                                onPressed: () {},
-                                child: Container(
-                                  width: 150,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Icon(
-                                        Zocial.youtube,
-                                        color: Colors.white,
-                                      ),
-                                      Text(
-                                        's\'abonner',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                    child: reseauSociaux(),
                   ),
                   // Plus d'actualités
                   SliverToBoxAdapter(
@@ -690,7 +561,7 @@ class _NewsProviderState extends State<NewsProvider>
                                 child: InkWell(
                                   onTap: () => Navigator.push(context,
                                       MaterialPageRoute(builder: (context) {
-                                    return OthersDetails(
+                                    return SliderDetails(
                                       id: others.id,
                                       titre: others.titre,
                                       subtitle: others.categorie['nom'],

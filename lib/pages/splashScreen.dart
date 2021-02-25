@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:fim_guinee/src/api_files/provider/services/repository.dart';
-import 'package:fim_guinee/src/api_files/provider/views/newsProvider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -27,12 +26,11 @@ class _SplashScreenState extends State<SplashScreen> {
   _callApi(){
     repository.fetchFimData(context);
      Timer(
-      Duration(seconds: 5),
+      Duration(seconds: 3),
       () => Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) {
-            // return NewsProvider();
             return NavyBarPage();
           },
         ),

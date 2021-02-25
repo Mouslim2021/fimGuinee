@@ -1,18 +1,10 @@
 import 'package:fim_guinee/pages/splashScreen.dart';
-import 'package:fim_guinee/pages/newsPage.dart';
-import 'package:fim_guinee/pages/teamPage.dart';
-import 'package:fim_guinee/pages/tvPage.dart';
 import 'package:fim_guinee/src/api_files/provider/fimProvider.dart';
-import 'package:fim_guinee/src/api_files/provider/views/newsProvider.dart';
-import 'package:fim_guinee/src/onboarding.dart';
-import 'package:fim_guinee/src/wrapper.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:fim_guinee/navy_bar.dart';
-import 'package:fim_guinee/src/youtubePlayer.dart';
-import 'src/api_files/home_api.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:provider/provider.dart';
+
 
 void main() {
   runApp(MyApp());

@@ -29,6 +29,7 @@ dependencies:
   connectivity: ^2.0.2
   flushbar: ^1.10.4
   provider: ^4.3.3
+  double_back_to_close_app: ^1.2.0
 
 dev_dependencies:
   flutter_test:
