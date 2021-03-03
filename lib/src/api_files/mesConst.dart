@@ -2,15 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/cupertino.dart';
 
-const url = "http://fim.amaty.biz/api";
-const img = "http://fim.amaty.biz/uploads";
-const simil = "http://fim.amaty.biz/api/similaire";
-const fim_url = "https://www.fimguinee.com";
+const url = "https://fimguinee.com/api/home";
+const img = "https://fimguinee.com/uploads";
+const simil = "https://fimguinee.com/api/similaire";
+const fim_url = "https://www.fimguinee.com/accueil";
+const share_url = "https://www.fimguinee.com/actualite";
 const thumbnail = "https://img.youtube.com/vi";
-const fmStream = "http://live02.rfi.fr/rfimonde-96k.mp3";
+const fmStream = "http://fimstreaming.zentechnologies.net:8000/fimlive";
 
 const faceBook = "https://www.facebook.com/fimguinee";
 
@@ -18,7 +20,7 @@ String fbId;
 
 const twitter = "https://www.twitter.com/fimguinee";
 const insta = "https://www.instagram.com/fimguinee";
-const youtube = "";
+const youtube = "https://m.youtube.com/channel/UCzyeperNyib1C_a6PiDmKug";
 
 
 
@@ -74,6 +76,9 @@ Platform.isIOS ? fbId = "fb://profile/116943413560577" : fbId ="fb://page/116943
     height: 130,
     child: Column(
       children: [
+        SizedBox(
+          height: 30,
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -90,7 +95,7 @@ Platform.isIOS ? fbId = "fb://profile/116943413560577" : fbId ="fb://page/116943
                       color: Colors.white,
                     ),
                     Text(
-                      's\'abonner',
+                      'FaceBook',
                       style: TextStyle(color: Colors.white),
                     )
                   ],
@@ -98,7 +103,7 @@ Platform.isIOS ? fbId = "fb://profile/116943413560577" : fbId ="fb://page/116943
               ),
             ),
             FlatButton(
-              color: Colors.blue[600],
+              color: Color(0xFF833AB4),
               onPressed: () => _launchSocial(insta),
               child: Container(
                 width: 150,
@@ -110,7 +115,7 @@ Platform.isIOS ? fbId = "fb://profile/116943413560577" : fbId ="fb://page/116943
                       color: Colors.white,
                     ),
                     Text(
-                      's\'abonner',
+                      'Instagram',
                       style: TextStyle(color: Colors.white),
                     ),
                   ],
@@ -133,9 +138,10 @@ Platform.isIOS ? fbId = "fb://profile/116943413560577" : fbId ="fb://page/116943
                     Icon(
                       Zocial.twitter,
                       color: Colors.white,
+                      size:18,
                     ),
                     Text(
-                      's\'abonner',
+                      'Twitter',
                       style: TextStyle(color: Colors.white),
                     ),
                   ],
@@ -144,7 +150,7 @@ Platform.isIOS ? fbId = "fb://profile/116943413560577" : fbId ="fb://page/116943
             ),
             FlatButton(
               color: Colors.red[600],
-              onPressed: () => null,
+              onPressed: () => _launchSocial(youtube),
               child: Container(
                 width: 150,
                 child: Row(
@@ -155,7 +161,7 @@ Platform.isIOS ? fbId = "fb://profile/116943413560577" : fbId ="fb://page/116943
                       color: Colors.white,
                     ),
                     Text(
-                      's\'abonner',
+                      'Youtube',
                       style: TextStyle(color: Colors.white),
                     ),
                   ],
@@ -168,3 +174,12 @@ Platform.isIOS ? fbId = "fb://profile/116943413560577" : fbId ="fb://page/116943
     ),
   );
 }
+
+ Future<void> share(dynamic link, String title) async {
+    await FlutterShare.share(
+      title: "Fim Guinée",
+      text: title,
+      linkUrl: link,
+      chooserTitle: "Partager cet article à vos proches",
+    );
+  }

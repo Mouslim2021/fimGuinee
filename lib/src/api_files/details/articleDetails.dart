@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '../mesConst.dart';
 import '../comments/recentComment.dart';
@@ -17,6 +18,7 @@ class SliderDetails extends StatefulWidget {
   String subtitle;
   String image;
   String description;
+  String slug;
 
   SliderDetails({
     this.id,
@@ -24,6 +26,7 @@ class SliderDetails extends StatefulWidget {
     this.subtitle,
     this.image,
     this.description,
+    this.slug,
   });
 
   @override
@@ -45,9 +48,7 @@ class _SliderDetailsState extends State<SliderDetails> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-            // title: Text(''),
-            ),
+        appBar: AppBar(),
         body: FutureBuilder(
           future: getDetails(),
           builder: (context, snapShot) {
@@ -131,7 +132,9 @@ class _SliderDetailsState extends State<SliderDetails> {
                     child: Expanded(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
-                        child: Text(widget.description),
+                        child: Html(
+                          data: widget.description,
+                        ),
                       ),
                     ),
                   ),
@@ -156,24 +159,27 @@ class _SliderDetailsState extends State<SliderDetails> {
                   ),
                   // Les réseaux sociaux
                   SliverToBoxAdapter(
-                    child: Row(
-                      children: [
-                        Container(
-                          height: 40,
-                          width: 5,
-                          color: Colors.orange[900],
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Text(
-                          "Nos réseaux sociaux",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            height: 40,
+                            width: 5,
+                            color: Colors.orange[900],
                           ),
-                        ),
-                      ],
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Text(
+                            "Nos réseaux sociaux",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   SliverToBoxAdapter(
@@ -181,24 +187,27 @@ class _SliderDetailsState extends State<SliderDetails> {
                   ),
                   // articles similaires
                   SliverToBoxAdapter(
-                    child: Row(
-                      children: [
-                        Container(
-                          height: 40,
-                          width: 5,
-                          color: Colors.orange[900],
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Text(
-                          "Articles similaires",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            height: 40,
+                            width: 5,
+                            color: Colors.orange[900],
                           ),
-                        ),
-                      ],
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Text(
+                            "Articles similaires",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   AnimationLimiter(
@@ -228,6 +237,8 @@ class _SliderDetailsState extends State<SliderDetails> {
                                       image: '$img/' +
                                           snapShot.data['similaires'][index]
                                               ['image'],
+                                      slug: snapShot.data['similaires'][index]
+                                          ['slug'],
                                     );
                                   })),
                                   child: Card(
@@ -256,8 +267,11 @@ class _SliderDetailsState extends State<SliderDetails> {
                                                   borderRadius:
                                                       BorderRadius.circular(5),
                                                 ),
-                                                child: Image.network('$img/' +
-                                                    '${snapShot.data['similaires'][index]['image']}'),
+                                                child: Image.network(
+                                                  '$img/' +
+                                                      '${snapShot.data['similaires'][index]['image']}',
+                                                  fit: BoxFit.cover,
+                                                ),
                                               ),
                                               Padding(
                                                 padding:
@@ -313,6 +327,16 @@ class _SliderDetailsState extends State<SliderDetails> {
               );
             }
           },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            share("$share_url/" + "${widget.slug}", "${widget.titre}");
+          },
+          child: Icon(
+            Icons.share,
+            color: Colors.white,
+            size: 30,
+          ),
         ),
       ),
     );

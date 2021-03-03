@@ -5,7 +5,7 @@ import 'pages/fmPage.dart';
 import 'pages/teamPage.dart';
 import 'pages/tvPage.dart';
 import 'package:flutter/material.dart';
-import 'src/youtubePlayer.dart';
+import 'pages/NotUsed/youtubePlayer.dart';
 
 class NavyBarPage extends StatefulWidget {
   @override
@@ -72,15 +72,15 @@ class _NavyBarPageState extends State<NavyBarPage>
         ),
         bottomNavigationBar: BottomNavyBar(
           backgroundColor: _selectedPage == 0
-              ? Colors.orange[900]
+              ? Colors.orange[600]
               : _selectedPage == 1
                   ? Colors.orange[700]
                   : _selectedPage == 2
-                      ? Colors.orange[900]
+                      ? Colors.orange[600]
                       : _selectedPage == 3
                           ? Colors.orange[700]
                           : _selectedPage == 4
-                              ? Colors.orange[900]
+                              ? Colors.orange[600]
                               : Colors.orange[700],
           selectedIndex: _selectedPage,
           showElevation: true,

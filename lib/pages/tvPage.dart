@@ -41,17 +41,19 @@ class _TvPageState extends State<TvPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
+        elevation: 8,
+        backgroundColor: Colors.white,
         onPressed: () {
           availbleTV();
         },
         icon: Icon(
           Icons.live_tv,
-          color: Colors.white,
+          color: Colors.orange[600],
         ),
         label: Text(
           'Régardez FIM 24 en live!',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.orange[600],
           ),
         ),
       ),

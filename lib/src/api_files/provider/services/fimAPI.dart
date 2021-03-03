@@ -8,7 +8,7 @@ class FimAPI{
   Client _client = Client();
 
   fetchFimData() async {
-    Response response = await _client.get('$url/home');
+    Response response = await _client.get('$url');
     if(response.statusCode ==200){
       print('Les données ont été recuperées');
       return fimModelFromJson(response.body);

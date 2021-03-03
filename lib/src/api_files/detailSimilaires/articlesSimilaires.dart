@@ -1,5 +1,6 @@
 import 'package:fim_guinee/src/api_files/comments/recentComment.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 import '../mesConst.dart';
 
@@ -9,6 +10,8 @@ class SimOthersDetail extends StatefulWidget {
   String subtitle;
   String image;
   String description;
+  String slug;
+
 
   SimOthersDetail({
     this.id,
@@ -16,6 +19,7 @@ class SimOthersDetail extends StatefulWidget {
     this.subtitle,
     this.image,
     this.description,
+    this.slug,
   });
   @override
   _SimOthersDetailState createState() => _SimOthersDetailState();
@@ -81,7 +85,9 @@ class _SimOthersDetailState extends State<SimOthersDetail> {
               child: Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Text(widget.description),
+                  child:  Html(
+                    data: widget.description,
+                  ),
                 ),
               ),
             ),
@@ -106,31 +112,45 @@ class _SimOthersDetailState extends State<SimOthersDetail> {
             ),
             // Les réseaux sociaux
             SliverToBoxAdapter(
-              child: Row(
-                children: [
-                  Container(
-                    height: 40,
-                    width: 5,
-                    color: Colors.orange[900],
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    "Nos réseaux sociaux",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Container(
+                      height: 40,
+                      width: 5,
+                      color: Colors.orange[900],
                     ),
-                  ),
-                ],
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      "Nos réseaux sociaux",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             SliverToBoxAdapter(
               child: reseauSociaux(),
               ),
           ],
+          
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: (){
+            share("$share_url/"+"${widget.slug}", "${widget.titre}");
+          },
+          child: Icon(
+            Icons.share,
+            color: Colors.white,
+            size: 30,
+            ),
+          ),
       ),
     );
   }

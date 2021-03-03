@@ -51,20 +51,25 @@ class Other {
         this.description,
         this.image,
         this.categorie,
+        this.slug,
     });
 
     int id;
     String titre;
     String description;
     String image;
+    String slug;
     Map categorie;
+
 
     factory Other.fromJson(Map<String, dynamic> json) => Other(
         id: json["id"],
         titre: json["titre"],
         description: json["description"],
         image: json["image"],
-        categorie: json["categorie"]
+        categorie: json["categorie"],
+        slug: json["slug"],
+
     );
 
     Map<String, dynamic> toJson() => {
@@ -73,6 +78,7 @@ class Other {
         "description": description,
         "image": image,
         "categorie": categorie,
+        "slug":slug,
     };
 }
 
@@ -128,3 +134,4 @@ class Video {
         "type": type,
     };
 }
+

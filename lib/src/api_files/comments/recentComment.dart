@@ -28,7 +28,7 @@ class _RecentCommentState extends State<RecentComment> {
     await preferences.setString('recentComment', response.body);
     final resultRecentComment = preferences.getString('recentComment');
     final result = json.decode(resultRecentComment);
-    print(result);
+    // print(result['commentaires']);
     return result;
   }
 
@@ -68,91 +68,93 @@ class _RecentCommentState extends State<RecentComment> {
                 ),
               );
             } else if (snapShot.hasData) {
-                    List list = snapShot.data['commentaires'];
-              return list == null ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.comment,
-                      size: 150,
-                      color: Colors.grey[800],
-                    ),
-                    SizedBox(height: 15),
-                    Container(
-                      width: 400,
-                      child: Text(
-                        "Aucun commentaire n'est disponible pour cet article",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 22,
-                          color: Colors.grey[800],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ) : ListView.builder(
-                  itemCount: list.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
+              List list = snapShot.data['commentaires'];
+              return list.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.comment,
+                            size: 150,
+                            color: Colors.grey[800],
+                          ),
+                          SizedBox(height: 15),
                           Container(
-                            height: 110,
-                            width: 110,
-                            child: CircleAvatar(
-                              backgroundColor: Colors.orange[900],
-                              child: Text(
-                                list[index]['name'][0],
-                                style: TextStyle(
-                                  fontSize: 50,
-                                  color: Colors.white,
-                                ),
+                            width: 400,
+                            child: Text(
+                              "Aucun commentaire n'est disponible pour cet article",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 22,
+                                color: Colors.grey[800],
                               ),
                             ),
                           ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        ],
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: list.length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Container(
-                                height: 50,
-                                width: 320,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10),
+                                height: 110,
+                                width: 110,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.orange[900],
                                   child: Text(
-                                    list[index]
-                                        ['name'],
-                                    textAlign: TextAlign.start,
+                                    list[index]['name'][0],
                                     style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
+                                      fontSize: 50,
+                                      color: Colors.white,
                                     ),
                                   ),
                                 ),
                               ),
-                              Container(
-                                width: 320,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Text(
-                                      list[index]['contenu'],
-                                      style: TextStyle(
-                                        fontSize: 16,
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(
+                                    height: 50,
+                                    width: 320,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Text(
+                                        list[index]['name'],
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
+                                  Container(
+                                    width: 320,
+                                    child: Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Text(
+                                          list[index]['contenu'],
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
                             ],
-                          )
-                        ],
-                      ),
-                    );
-                  });
+                          ),
+                        );
+                      });
             } else {
               return SpinKitFadingCube(
                 color: Colors.orange[900],

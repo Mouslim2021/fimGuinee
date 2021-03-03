@@ -1,3 +1,4 @@
+import 'package:fim_guinee/pages/fmPage.dart';
 import 'package:fim_guinee/pages/splashScreen.dart';
 import 'package:fim_guinee/src/api_files/provider/fimProvider.dart';
 import 'package:flutter/services.dart';
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
           accentColor: Colors.orange[700],
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
+        // home: FmPage(),
         home: SplashScreen(),
       ),
     );

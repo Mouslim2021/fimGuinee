@@ -1,17 +1,28 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:http/http.dart' as http;
 import 'package:connectivity/connectivity.dart';
+import 'package:fim_guinee/src/api_files/mesConst.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FmPages extends StatefulWidget {
   @override
   _FmPagesState createState() => _FmPagesState();
 }
 
-class _FmPagesState extends State<FmPages> with AutomaticKeepAliveClientMixin{
+class _FmPagesState extends State<FmPages> with AutomaticKeepAliveClientMixin {
   final AssetsAudioPlayer _player = AssetsAudioPlayer.newPlayer();
 
-   checkConn() async {
+//   String streamUrl;
+
+//  Future<String> getStreamUrl() async{
+
+//   }
+
+  checkConn() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile) {
       print('Connected with mobile data');
@@ -35,15 +46,20 @@ class _FmPagesState extends State<FmPages> with AutomaticKeepAliveClientMixin{
     }
   }
 
-
   void _init() async {
     try {
       _player.onErrorDo = (error) {
         error.player.stop();
       };
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      final response = await http.get(url);
+      preferences.setString('streamUrl', response.body);
+      final stream = preferences.getString("streamUrl");
+      final result = json.decode(stream);
+      String streamUrl = result['app']['radio_streaming'].toString();
       await _player.open(
         Audio.liveStream(
-          "http://live02.rfi.fr/rfimonde-96k.mp3",
+          streamUrl,
           metas: Metas(
             title: "95.3",
             album: "",
@@ -64,90 +80,94 @@ class _FmPagesState extends State<FmPages> with AutomaticKeepAliveClientMixin{
       print(t);
     }
   }
-    @override
+
+  @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 
- @override
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    // final liveStream = getStreamUrl();
     checkConn();
     _init();
   }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-    body: Stack(
-      children: [
-        Container(
-          width: double.infinity,
-          height: double.infinity,
-          child: Image.asset(
-            'assets/img_2.png',
-            fit: BoxFit.cover,
-          ),
-        ),
-      ],
-    ),
-    floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    floatingActionButton: Container(
-      padding: EdgeInsets.all(0),
-      width: double.infinity,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          PlayerBuilder.isBuffering(
-            player: _player,
-            builder: (context, isBuffering) {
-              if (isBuffering) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    CircularProgressIndicator(
-                      backgroundColor: Colors.black26,
-                      strokeWidth: 5,
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                  ],
-                );
-              } else {
-                return PlayerBuilder.isPlaying(
-                  player: _player,
-                  builder: (context, isPlaying) {
-                    return FloatingActionButton(
-                      child: isPlaying
-                          ? Icon(
-                              Icons.pause,
-                              color: Colors.white,
-                            )
-                          : Icon(
-                              Icons.play_arrow,
-                              color: Colors.white,
-                            ),
-                      onPressed: () async {
-                        try {
-                          await _player.playOrPause();
-                        } catch (t) {
-                          print(t);
-                        }
-                      },
-                    );
-                  },
-                );
-              }
-            },
+      body: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            child: Image.asset(
+              'assets/img_2.png',
+              fit: BoxFit.cover,
+            ),
           ),
         ],
       ),
-    ),
-  );
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Container(
+        padding: EdgeInsets.all(0),
+        width: double.infinity,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            PlayerBuilder.isBuffering(
+              player: _player,
+              builder: (context, isBuffering) {
+                if (isBuffering) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CircularProgressIndicator(
+                        backgroundColor: Colors.black26,
+                        strokeWidth: 5,
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                    ],
+                  );
+                } else {
+                  return PlayerBuilder.isPlaying(
+                    player: _player,
+                    builder: (context, isPlaying) {
+                      return FloatingActionButton(
+                        elevation: 8,
+                        backgroundColor: Colors.white,
+                        child: isPlaying
+                            ? Icon(
+                                Icons.pause_circle_outline,
+                                color: Colors.orange[600],
+                                size: 35,
+                              )
+                            : Icon(
+                                Icons.play_circle_outline,
+                                color: Colors.orange[600],
+                                size: 35,
+                              ),
+                        onPressed: () async {
+                          try {
+                            await _player.playOrPause();
+                          } catch (t) {
+                            print(t);
+                          }
+                        },
+                      );
+                    },
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
-
-
-  
 }
