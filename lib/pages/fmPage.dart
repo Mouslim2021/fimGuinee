@@ -64,7 +64,7 @@ class _FmPagesState extends State<FmPages> with AutomaticKeepAliveClientMixin {
             title: "95.3",
             album: "",
             artist: "",
-            image: MetasImage.asset("assets/fataya.jpg"),
+            image: MetasImage.network("https://fimguinee.com/frontend/logo_nav.png"),
           ),
         ),
         autoStart: true,
